@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./StopWatch.css";
 
 export const StopWatch = () => {
@@ -6,7 +6,7 @@ export const StopWatch = () => {
   const [trackingStarted, setTrackingStarted] = useState(false);
   const [trackerList, setTrackerList] = useState([]);
   const [trackerIndex, setTrackerIndex] = useState(0);
-  const [editName, setEditName] = useState(false);
+  const [changeName, setChangeName] = useState(false);
 
   // Functions
   const startTracking = () => {
@@ -65,21 +65,13 @@ export const StopWatch = () => {
         element.index = index;
       });
       setTrackerIndex(updatedList.length);
-      return updatedList.reverse();
+      return updatedList;
     });
   };
 
-  // Add a function to edit the name of the report
+  // Add a function that updates the name of the correct index
 
-  const changeName = (e) => {
-    editName ? setEditName(false) : setEditName(true);
-  };
-  // Listen to the click of the icon and convert the span to an input
-
-  // Add a button that updates the name of that particular object's name
-
-  // Update the state with the new varaible and re-render the page
-
+  //On click, take the value of the input and push it into the state at the proper index
   // Create a new instance of the TrackerObject class
   class TrackerObject {
     constructor(stopTime, startTime, index) {
@@ -91,6 +83,7 @@ export const StopWatch = () => {
       this.hours = getHoursFromUnix(startTime, stopTime);
       this.description = "En kommentar";
       this.index = index;
+      this.edit = false;
     }
   }
 
@@ -116,27 +109,47 @@ export const StopWatch = () => {
       </section>
       <section className="time-tracker-list">
         {trackerList.map(
-          ({ name, date, start, stop, minutes, hours, description, index }) => (
+          ({
+            name,
+            date,
+            start,
+            stop,
+            minutes,
+            hours,
+            description,
+            index,
+            edit,
+          }) => (
             <div
               key={index}
               className="time-tracker-list-container"
               data-index={index}
             >
-              <div className="time-tracker-list-item time-tracker-list-label">
-                <img
-                  src="../../src/assets/PencilSquare.svg"
-                  alt="redigera namn"
-                  onClick={changeName}
-                />
-                {editName ? (
+              {changeName ? (
+                <div className="time-tracker-list-item time-tracker-list-label">
+                  <img
+                    src="../../src/assets/PencilSquare.svg"
+                    alt="redigera namn"
+                    onClick={() => setChangeName(false)}
+                  />
                   <form>
-                    <input type="text"></input>
-                    <button>Spara</button>
+                    <input data-index={index} type="text"></input>
+                    <button data-index={index} type="submit">
+                      Spara
+                    </button>
                   </form>
-                ) : (
+                </div>
+              ) : (
+                <div className="time-tracker-list-item time-tracker-list-label">
+                  <img
+                    src="../../src/assets/PencilSquare.svg"
+                    alt="redigera namn"
+                    data-index={index}
+                    onClick={() => setChangeName(true)}
+                  />
                   <span>{name}</span>
-                )}
-              </div>
+                </div>
+              )}
               <div className="time-tracker-list-item time-tracker-list-date">
                 <span>{date}</span>
               </div>
